@@ -3,27 +3,7 @@ import key
 
 openai.api_key = key.api_key
 
-company_names = ['AI', 'Twitter', 'SpaceX', 'Tesla']
-
-def evaluate_tweet(tweet):
-    keywords = ['AI', 'Twitter', 'SpaceX', 'Tesla']
-
-    for keyword in keywords:
-        if keyword.lower() in tweet.lower():
-            return 1
-
-    return 0
-
-# Function to process Elon Musk's tweets
-def process_elon_tweets(tweets):
-    results = []
-    for tweet in tweets:
-        result = evaluate_tweet(tweet)
-        results.append(result)
-
-    return results
-
-elon_tweets = [
+tweets = [
     "If your Tesla has >20% charge, Cabin Overheat Protection automatically ensures safety of your loved ones",
     "Future of AI with @elonmusk @rokhanna @mikeforWI",
     "Announcing formation of @xAI to understand reality",
@@ -33,12 +13,21 @@ elon_tweets = [
     "The Outside Context Problem"
 ]
 
-tweet_results = process_elon_tweets(elon_tweets)
+model_engine = "text-davinci-003"
+prompt = "Given a tweet, determine if it is primarily about business or not.\n\nPrint 'yes' if it's about business. I mean Twitter, SpaceX, Tesla."
 
-for i, result in enumerate(tweet_results):
-    print(f"Tweet {i+1}: {elon_tweets[i]}")
-    if result == 1:
-        print("Related to a company's business, 1")
+for tweet in tweets:
+    inputText = prompt + f"Tweet: {tweets}\nIs about business? Print 'yes' if it's about business. I mean twitter, spaceX, Tesla."
+    completion = openai.Completion.create(
+        engine=model_engine,
+        prompt=inputText,
+        max_tokens=1024,
+        n=1,
+        stop=None,
+        temperature=0.5
+    )
+    response = completion.choices[0].text
+    if "Yes" in response:
+        print(1)
     else:
-        print("Not related to a company's business, 0")
-    print()
+        print(0)
